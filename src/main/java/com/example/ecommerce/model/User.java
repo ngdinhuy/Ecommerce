@@ -7,13 +7,17 @@ import java.io.Serializable;
 @Entity
 @Table(name = "tbl_user")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-class User implements Serializable {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
+
+    @Column(unique = true)
     private String email;
     private String phoneNumber;
+
+    @Column(unique = true)
     private String username;
     private String password;
     private int role;
@@ -72,5 +76,18 @@ class User implements Serializable {
 
     public void setRole(int role) {
         this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                '}';
     }
 }

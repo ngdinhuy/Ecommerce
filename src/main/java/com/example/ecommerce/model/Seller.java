@@ -61,6 +61,4 @@ public class Seller  extends User {
 //    public List<Product> getProducts() {
 //        return products;
 //    }
-
-
 }
