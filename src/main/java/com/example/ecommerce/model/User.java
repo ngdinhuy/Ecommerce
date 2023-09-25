@@ -1,8 +1,15 @@
 package com.example.ecommerce.model;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 
-abstract class User implements Serializable {
+@Entity
+@Table(name = "tbl_user")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+class User implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private String email;

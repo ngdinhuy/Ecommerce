@@ -2,6 +2,8 @@ package com.example.ecommerce.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table (name = "tbl_category")
 public class Category {
@@ -33,4 +35,11 @@ public class Category {
     public void setTitle(String title) {
         this.title = title;
     }
+
+//    @ManyToMany
+//    @JoinTable(name = "category_product",
+//    joinColumns = @JoinColumn(name = "category_id"),
+//    inverseJoinColumns = @JoinColumn(name = "product_id"))
+//    private List<Product> products;
+
 }
