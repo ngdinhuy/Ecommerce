@@ -6,6 +6,10 @@ public class Define {
     public static final int INCORRECT_PASSWORD = 2;
 
     public static String SUCCESS = "success";
+
+    public static String ERROR = "error";
     public static String NOT_FOUND = "Not found";
     public static String PASSWORD_IS_INCORRECT="Password is incorrect";
+
+    public static String USERNAME_WAS_EXIST = "Username was exist";
 }

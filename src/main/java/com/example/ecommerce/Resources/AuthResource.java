@@ -3,6 +3,7 @@ package com.example.ecommerce.Resources;
 
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.request.LoginRequest;
+import com.example.ecommerce.request.RegisterRequest;
 import com.example.ecommerce.response.BaseResponse;
 import com.example.ecommerce.service.AuthService;
 import com.example.ecommerce.utils.Define;
@@ -19,29 +20,28 @@ public class AuthResource {
     private AuthService authService;
 
     @PostMapping("/login")
-//    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<BaseResponse> login(@RequestBody LoginRequest request){
-        User user = authService.login(request.getUsername(),request.getPassword());
+        User user = authService.getUserByUsername(request.getUsername());
         if (user == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new BaseResponse(
-                            Define.NOT_FOUND,
+                            HttpStatus.NOT_FOUND.value(),
                             new String[]{Define.NOT_FOUND},
                             ""
                     )
             );
-        } else if (user.getPassword().equals(request.getPassword())){
+        } else if (!user.getPassword().equals(request.getPassword())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new BaseResponse(
-                            Define.NOT_FOUND,
-                            new String[]{Define.NOT_FOUND},
+                            HttpStatus.NOT_FOUND.value(),
+                            new String[]{Define.PASSWORD_IS_INCORRECT},
                             ""
                     )
             );
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new BaseResponse(
-                            Define.SUCCESS,
+                            HttpStatus.OK.value(),
                             new String[]{},
                             user
                     )
@@ -50,8 +50,23 @@ public class AuthResource {
 
     }
 
-    @GetMapping("")
-    String test(){
-        return "huy";
+    @PostMapping("/register")
+    ResponseEntity<BaseResponse> register(@RequestBody RegisterRequest request){
+        User user = new User(request.getName(), request.getUsername(), request.getPassword(), request.getRole());
+        User userByName = authService.getUserByUsername(request.getUsername());
+        if (userByName != null){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new BaseResponse(HttpStatus.CONFLICT.value(), new String[]{Define.USERNAME_WAS_EXIST},"")
+            );
+        }
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new BaseResponse(HttpStatus.OK.value(),new String[]{}, authService.register(user))
+            );
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new String[]{e.getMessage()}, "")
+            );
+        }
     }
 }
