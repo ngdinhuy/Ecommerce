@@ -18,7 +18,7 @@ public class CategoryResource {
     @Autowired
     CategoryService categoryService;
 
-    @GetMapping()
+    @GetMapping(path = "/all")
     ResponseEntity<BaseResponse> getAllCategory(){
         return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, categoryService.getListCategory());
     }
@@ -27,7 +27,7 @@ public class CategoryResource {
     ResponseEntity<BaseResponse> addCategory(@RequestBody Category category){
         List<Category> categoriesExist = categoryService.getListCategoryFollowTitle(category.getTitle());
         if (!categoriesExist.isEmpty()){
-            return Utils.getResponse(HttpStatus.CONTINUE.value(), new String[]{"Category is exist"},"");
+            return Utils.getResponse(HttpStatus.CONTINUE.value(), new String[]{"Category is exist"},null);
         } else {
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, categoryService.addCategory(category));
         }

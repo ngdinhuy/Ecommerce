@@ -23,4 +23,6 @@ public class CategoryService {
     public Category addCategory(Category category){
         return repository.save(category);
     }
+
+    public Category getCategoryById(Integer id){ return repository.getCategoryById(id);}
 }

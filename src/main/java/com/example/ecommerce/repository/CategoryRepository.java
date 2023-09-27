@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
     List<Category> getCategoriesByTitle(String title);
+
+    Category getCategoryById(Integer id);
 }

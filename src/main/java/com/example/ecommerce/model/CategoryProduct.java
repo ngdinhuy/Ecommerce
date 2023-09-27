@@ -24,6 +24,11 @@ public class CategoryProduct implements Serializable {
     public CategoryProduct() {
     }
 
+    public CategoryProduct(Category category, Product product) {
+        this.category = category;
+        this.product = product;
+    }
+
     public int getId() {
         return id;
     }

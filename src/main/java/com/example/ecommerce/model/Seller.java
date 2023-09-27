@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_seller")
-public class Seller  extends User {
+public class Seller extends User {
 
 //    private List<Product> products;
     public Seller() {

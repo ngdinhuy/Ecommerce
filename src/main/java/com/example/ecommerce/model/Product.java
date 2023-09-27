@@ -30,8 +30,8 @@ public class Product implements Serializable {
     private String image;
 
     @ManyToOne()
-    @JoinColumn(name = "seller_id")
-    private Seller seller;
+    @JoinColumn(name = "user_id")
+    private User user;
 
 //    public Product(String name, String descriptiopn, int quantity, int price, int discount, String reviewNumber, double rate, String image, Seller sellerid) {
 //        this.name = name;
@@ -116,11 +116,11 @@ public class Product implements Serializable {
         this.image = image;
     }
 
-    public Seller getSellerid() {
-        return seller;
+    public User getSellerid() {
+        return user;
     }
 
-    public void setSellerid(Seller sellerid) {
-        this.seller = sellerid;
+    public void setSellerid(User sellerid) {
+        this.user = sellerid;
     }
 }

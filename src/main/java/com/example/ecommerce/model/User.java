@@ -3,6 +3,7 @@ package com.example.ecommerce.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "tbl_user")
@@ -25,6 +26,10 @@ public class User implements Serializable {
     private int role;
 
     private String avatar;
+
+    @OneToMany(mappedBy = "user")
+    private List<Product> products;
+
 
     public void setId(Integer id) {
         this.id = id;

@@ -23,19 +23,19 @@ public class AuthResource {
     ResponseEntity<BaseResponse> login(@RequestBody LoginRequest request){
         User user = authService.getUserByUsername(request.getUsername());
         if (user == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            return ResponseEntity.status(HttpStatus.OK).body(
                     new BaseResponse(
                             HttpStatus.NOT_FOUND.value(),
                             new String[]{Define.NOT_FOUND},
-                            ""
+                            null
                     )
             );
         } else if (!user.getPassword().equals(request.getPassword())){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            return ResponseEntity.status(HttpStatus.OK).body(
                     new BaseResponse(
                             HttpStatus.NOT_FOUND.value(),
                             new String[]{Define.PASSWORD_IS_INCORRECT},
-                            ""
+                            null
                     )
             );
         } else {
@@ -56,7 +56,7 @@ public class AuthResource {
         User userByName = authService.getUserByUsername(request.getUsername());
         if (userByName != null){
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new BaseResponse(HttpStatus.CONFLICT.value(), new String[]{Define.USERNAME_WAS_EXIST},"")
+                    new BaseResponse(HttpStatus.CONFLICT.value(), new String[]{Define.USERNAME_WAS_EXIST},null)
             );
         }
         try{
@@ -65,7 +65,7 @@ public class AuthResource {
             );
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new String[]{e.getMessage()}, "")
+                    new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new String[]{e.getMessage()}, null)
             );
         }
     }
