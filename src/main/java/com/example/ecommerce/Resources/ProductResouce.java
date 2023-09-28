@@ -11,6 +11,7 @@ import com.example.ecommerce.service.ProdcutService;
 import com.example.ecommerce.service.UserService;
 import com.example.ecommerce.utils.Define;
 import com.example.ecommerce.utils.Utils;
+import org.slf4j.helpers.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class ProductResouce {
     @PostMapping(path = "/insert")
     ResponseEntity<BaseResponse> insertProduct(@RequestBody AddProductRequest request){
         //kiem tra user co ton tai khong
-        User seller = userService.findUserById(request.getIdSeller());
+        User seller = userService.findUserByIdAndRole(request.getIdSeller(), Define.ROLE_SELLER);
         if (seller == null){
             return Utils.getResponse(HttpStatus.NOT_FOUND.value(), new String[]{"Cant find seller"}, null);
         }

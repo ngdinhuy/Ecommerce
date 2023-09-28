@@ -15,6 +15,7 @@ public class Product implements Serializable {
 
     private String name;
 
+    @Column(length = 3000)
     private String description;
 
     private int quantity;
