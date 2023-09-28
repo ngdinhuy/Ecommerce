@@ -5,6 +5,8 @@ import com.example.ecommerce.repository.CategoryProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CategoryProductService {
     @Autowired
@@ -12,5 +14,9 @@ public class CategoryProductService {
 
     public CategoryProduct addCategoryProduct(CategoryProduct categoryProduct){
         return categoryProductRepository.save(categoryProduct);
+    }
+
+    public List<CategoryProduct> getCategoryProductByIdCategory(Integer idCategory){
+        return categoryProductRepository.findCategoryProductsByCategoryId(idCategory);
     }
 }

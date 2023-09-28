@@ -29,4 +29,16 @@ public class ProdcutService {
         return repository.getProductsByUserId(id);
     }
 
+    public Product getProductById(int id){
+        return repository.getProductById(id);
+    }
+
+    public List<Product> getAllProduct(){
+        return repository.findAll();
+    }
+
+    public Product updateProduct(Product product) {
+        return repository.save(product);
+    }
+
 }

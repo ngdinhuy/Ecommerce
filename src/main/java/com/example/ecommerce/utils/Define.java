@@ -5,6 +5,8 @@ public class Define {
     public static final int USERNAME_NOT_FOUND = 1;
     public static final int INCORRECT_PASSWORD = 2;
 
+    public static final int ERROR_CODE = -1;
+
     public static String SUCCESS = "success";
 
     public static String ERROR = "error";
