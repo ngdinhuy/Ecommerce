@@ -14,6 +14,11 @@ public class UserService {
         return userRepository.findUserById(id);
     }
 
+    public User findUserByIdAndRole(Integer id, Integer role){
+        return userRepository.findUserByIdAndRole(id, role);
+    }
+
+
     public User updateUser(User user){
         return userRepository.save(user);
     }
