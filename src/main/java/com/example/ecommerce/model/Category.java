@@ -15,6 +15,8 @@ public class Category {
 
     private String title;
 
+    private String description;
+
     public Category() {
     }
 
@@ -38,7 +40,19 @@ public class Category {
         this.title = title;
     }
 
-//    @ManyToMany
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    //    @ManyToMany
 //    @JoinTable(name = "category_product",
 //    joinColumns = @JoinColumn(name = "category_id"),
 //    inverseJoinColumns = @JoinColumn(name = "product_id"))

@@ -7,7 +7,9 @@ public class UpdateProductRequest {
 
     private String image, name;
 
-    private Integer price,quantity;
+    private Integer quantity;
+
+    private Double price;
     private Double rate;
     private String reviewNumber;
 
@@ -43,11 +45,11 @@ public class UpdateProductRequest {
         this.name = name;
     }
 
-    public Integer getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

@@ -4,7 +4,9 @@ public class AddProductRequest {
     private int idSeller;
     private String name, description;
 
-    private int quantity, price, discount;
+    private int quantity, discount;
+
+    private Double price;
 
     private String image;
 
@@ -42,11 +44,11 @@ public class AddProductRequest {
         this.quantity = quantity;
     }
 
-    public int getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
