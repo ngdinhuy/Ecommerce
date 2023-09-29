@@ -15,7 +15,7 @@ public class Product implements Serializable {
 
     private String name;
 
-    private String descriptiopn;
+    private String description;
 
     private int quantity;
 
@@ -60,12 +60,12 @@ public class Product implements Serializable {
         this.name = name;
     }
 
-    public String getDescriptiopn() {
-        return descriptiopn;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescriptiopn(String descriptiopn) {
-        this.descriptiopn = descriptiopn;
+    public void setDescription(String descriptiopn) {
+        this.description = descriptiopn;
     }
 
     public int getQuantity() {

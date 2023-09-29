@@ -5,12 +5,12 @@ import com.example.ecommerce.request.AddProductRequest;
 import com.example.ecommerce.request.CategoryProductService;
 import com.example.ecommerce.request.UpdateProductRequest;
 import com.example.ecommerce.response.BaseResponse;
+import com.example.ecommerce.response.CategoryProductResponse;
 import com.example.ecommerce.service.CategoryService;
 import com.example.ecommerce.service.ProdcutService;
 import com.example.ecommerce.service.UserService;
 import com.example.ecommerce.utils.Define;
 import com.example.ecommerce.utils.Utils;
-import org.slf4j.helpers.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +45,7 @@ public class ProductResouce {
         Product addedProduct = new Product();
         addedProduct.setSellerid(seller);
         addedProduct.setName(request.getName());
-        addedProduct.setDescriptiopn(request.getDescription());
+        addedProduct.setDescription(request.getDescription());
         addedProduct.setQuantity(request.getQuantity());
         addedProduct.setPrice(request.getPrice());
         addedProduct.setDiscount(request.getDiscount());
@@ -78,7 +78,7 @@ public class ProductResouce {
         for(CategoryProduct categoryProduct: categoryProducts){
             products.add(prodcutService.getProductById(categoryProduct.getProduct().getId()));
         }
-        if(products.size() == 0){
+        if(products.isEmpty()){
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{"The category is empty"}, null);
         } else {
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, products);
@@ -98,7 +98,7 @@ public class ProductResouce {
             return Utils.getResponse(HttpStatus.NOT_FOUND.value(), new String[]{"Product not exist"}, null);
         }
         if (request.getDescription()!=null){
-            updatedProduct.setDescriptiopn(request.getDescription());
+            updatedProduct.setDescription(request.getDescription());
         }
         if (request.getDiscount() != null){
             updatedProduct.setDiscount(request.getDiscount());
@@ -126,5 +126,31 @@ public class ProductResouce {
         } catch (Exception e){
             return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
         }
+    }
+
+    @GetMapping(path = "/category_product")
+    ResponseEntity<BaseResponse> getCategoryAndProduct(){
+        List<Category> categories = categoryService.getListCategory();
+        ArrayList<CategoryProductResponse> response = new ArrayList<>();
+        for(Category category: categories){
+            CategoryProductResponse categoryProductResponse = new CategoryProductResponse();
+            categoryProductResponse.setIdCategory(category.getId());
+            categoryProductResponse.setTitleCategory(category.getTitle());
+            categoryProductResponse.setDescriptionCategory(category.getDescription());
+
+            List<CategoryProduct> categoryProducts = categoryProductService.getCategoryProductByIdCategory(category.getId());
+            if (categoryProducts.isEmpty()){
+                continue;
+            }
+            ArrayList<Product> products = new ArrayList<>();
+            for(CategoryProduct categoryProduct: categoryProducts){
+                products.add(prodcutService.getProductById(categoryProduct.getProduct().getId()));
+            }
+            if(products.size()<=5){
+                categoryProductResponse.setProducts(products);
+                response.add(categoryProductResponse);
+            }
+        }
+        return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, response);
     }
 }
