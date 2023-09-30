@@ -1,13 +1,10 @@
 package com.example.ecommerce.utils;
 
 public class Define {
-    public static final int ROLE_ADMIN = 2;
+    public static final int ROLE_ADMIN = 0;
     public static final int ROLE_SELLER = 1;
     public static final int ROLE_CUSTOMER = 2;
 
-
-
-    public static final int ERROR_CODE = -1;
 
     public static final int ERROR_CODE = -1;
 
