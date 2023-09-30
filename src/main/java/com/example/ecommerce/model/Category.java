@@ -17,6 +17,8 @@ public class Category {
 
     private String description;
 
+    private String image;
+
     public Category() {
     }
 
@@ -50,6 +52,14 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     //    @ManyToMany
