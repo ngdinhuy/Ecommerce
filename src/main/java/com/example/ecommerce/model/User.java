@@ -1,5 +1,6 @@
 package com.example.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -27,8 +28,10 @@ public class User implements Serializable {
 
     private String avatar;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Product> products;
+
 
 
     public void setId(Integer id) {

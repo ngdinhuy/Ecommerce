@@ -1,5 +1,7 @@
 package com.example.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -13,7 +15,7 @@ public class CartItem implements Serializable {
 
     private int quantity;
 
-    private int totalPrice;
+    private Double totalPrice;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -21,9 +23,17 @@ public class CartItem implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
+    @JsonIgnore
     private Cart cart;
 
     public CartItem() {
+    }
+
+    public CartItem(int quantity, Double totalPrice, Product product, Cart cart) {
+        this.quantity = quantity;
+        this.totalPrice = totalPrice;
+        this.product = product;
+        this.cart = cart;
     }
 
     public Integer getId() {
@@ -42,11 +52,11 @@ public class CartItem implements Serializable {
         this.quantity = quantity;
     }
 
-    public int getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(int totalPrice) {
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
 

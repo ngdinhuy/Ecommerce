@@ -15,4 +15,13 @@ public class Define {
     public static String PASSWORD_IS_INCORRECT="Password is incorrect!";
 
     public static String USERNAME_WAS_EXIST = "Username was exist!";
+
+    public static String USER_CART_IS_NOT_EXIST = "User cart is not exist!";
+
+    public class FilferType{
+        public static Integer CUSTOMER_REVIEW = 1;
+        public static Integer PRICE_LOWEST_TO_HIGH = 2;
+        public static Integer PRICE_HIGHEST_TO_LOW = 3;
+
+    }
 }
