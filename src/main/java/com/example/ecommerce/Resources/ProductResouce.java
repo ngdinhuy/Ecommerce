@@ -6,19 +6,18 @@ import com.example.ecommerce.request.CategoryProductService;
 import com.example.ecommerce.request.UpdateProductRequest;
 import com.example.ecommerce.response.BaseResponse;
 import com.example.ecommerce.response.CategoryProductResponse;
-import com.example.ecommerce.service.CategoryService;
-import com.example.ecommerce.service.ProdcutService;
-import com.example.ecommerce.service.UserService;
+import com.example.ecommerce.service.*;
 import com.example.ecommerce.utils.Define;
 import com.example.ecommerce.utils.Utils;
+import org.hibernate.mapping.Any;
 import org.slf4j.helpers.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/product")
@@ -35,6 +34,12 @@ public class ProductResouce {
 
     @Autowired
     private CategoryProductService categoryProductService;
+
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private CartItemService cartItemService;
 
     @PostMapping(path = "/insert")
     ResponseEntity<BaseResponse> insertProduct(@RequestBody AddProductRequest request){
@@ -69,8 +74,8 @@ public class ProductResouce {
         return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, prodcutService.getProductBySellerId(id));
     }
 
-    @GetMapping(path = "/category/{id}")
-    ResponseEntity<BaseResponse> getProductByCategoryId(@PathVariable int id){
+    @GetMapping(path = "/category")
+    ResponseEntity<BaseResponse> getProductByCategoryId(@RequestParam int id, @RequestParam int filter){
         List<CategoryProduct> categoryProducts = categoryProductService.getCategoryProductByIdCategory(id);
         if (categoryProducts.isEmpty()){
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{"The category is empty"}, null);
@@ -82,9 +87,43 @@ public class ProductResouce {
         if(products.isEmpty()){
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{"The category is empty"}, null);
         } else {
+            if (filter == Define.FilferType.CUSTOMER_REVIEW){
+                Collections.sort(products, new Comparator<Product>() {
+                    @Override
+                    public int compare(Product o1, Product o2) {
+                        if (o1.getRate() == null || o2.getRate() == null){
+                            return 0;
+                        }
+                        return o1.getRate() > o2.getRate()? 1 : -1;
+                    }
+                });
+                Collections.reverse(products);
+            } else if (filter == Define.FilferType.PRICE_HIGHEST_TO_LOW){
+                Collections.sort(products, new Comparator<Product>() {
+                    @Override
+                    public int compare(Product o1, Product o2) {
+                        if (o1.getPriceProduct() == null || o2.getPriceProduct() == null){
+                            return 0;
+                        }
+                        return o1.getPriceProduct() > o2.getPriceProduct()? 1 : -1;
+                    }
+                });
+            } else if (filter == Define.FilferType.PRICE_LOWEST_TO_HIGH){
+                Collections.sort(products, new Comparator<Product>() {
+                    @Override
+                    public int compare(Product o1, Product o2) {
+                        if (o1.getPriceProduct() == null || o2.getPriceProduct() == null){
+                            return 0;
+                        }
+                        return -o1.getPriceProduct().compareTo(o2.getPriceProduct());
+                    }
+                });
+            }
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, products);
         }
     }
+
+
 
     @GetMapping(path = "/all")
     ResponseEntity<BaseResponse> getAllProduct(){
@@ -153,5 +192,32 @@ public class ProductResouce {
             }
         }
         return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, response);
+    }
+
+    @PostMapping(path = "/purchase")
+    ResponseEntity<BaseResponse> addToCart(@RequestBody MultiValueMap<String, String> request){
+        Integer idUser = Integer.parseInt(Objects.requireNonNull(request.getFirst("idUser")));
+        Integer quantity = Integer.parseInt(Objects.requireNonNull(request.getFirst("quantity")));
+        Integer idProduct = Integer.parseInt(Objects.requireNonNull(request.getFirst("idProduct")));
+        Cart cart = cartService.findCartByUserId(idUser);
+        Product product = prodcutService.getProductById(idProduct);
+        if (cart == null){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{Define.USER_CART_IS_NOT_EXIST}, null);
+        } else if (product == null){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{"Product is not exist"}, null);
+        }
+
+        try{
+            // Check sản phẩm đã tồn tại trong cart chưa, nếu tồn tại thì sửa đổi quantity, chưa thì thêm vào
+            CartItem existCartItem = cartItemService.findCartItemByProductId(idProduct, cart.getId());
+            if (existCartItem == null){
+                CartItem cartItem = new CartItem(quantity, quantity*product.getPriceProduct(), product, cart);
+                return  Utils.getResponse( HttpStatus.OK.value(), new String[]{}, cartItemService.addCartItem(cartItem));
+            } else {
+                return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, cartItemService.changeQuantityProduct(existCartItem, quantity));
+            }
+        } catch (Exception e){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
+        }
     }
 }

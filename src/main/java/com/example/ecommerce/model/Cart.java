@@ -1,5 +1,7 @@
 package com.example.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -14,9 +16,10 @@ public class Cart implements Serializable {
 
     @OneToOne
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private User user;
 
     @OneToMany(mappedBy = "cart")
+    @JsonIgnore
     private List<CartItem> cartItems;
 
     public Cart() {
@@ -30,12 +33,12 @@ public class Cart implements Serializable {
         this.id = id;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public User getUser() {
+        return user;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public List<CartItem> getCartItems() {
