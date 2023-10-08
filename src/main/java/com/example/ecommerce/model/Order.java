@@ -1,5 +1,6 @@
 package com.example.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -17,9 +18,21 @@ public class Order implements Serializable {
 
     private Integer discount;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private User user;
+
+    public Order(String date, Integer total, Integer discount, User user) {
+        this.date = date;
+        this.total = total;
+        this.discount = discount;
+        this.user = user;
+    }
+
+    public Order() {
+
+    }
 
     public int getId() {
         return id;
@@ -53,11 +66,11 @@ public class Order implements Serializable {
         this.discount = discount;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public User getUser() {
+        return user;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

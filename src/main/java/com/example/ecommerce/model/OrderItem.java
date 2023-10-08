@@ -1,5 +1,6 @@
 package com.example.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ public class OrderItem implements Serializable {
 
     private Integer quantity;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -22,6 +24,12 @@ public class OrderItem implements Serializable {
     private Order order;
 
     public OrderItem() {
+    }
+
+    public OrderItem(Integer quantity, Product product, Order order) {
+        this.quantity = quantity;
+        this.product = product;
+        this.order = order;
     }
 
     public Integer getId() {
