@@ -18,14 +18,17 @@ public class Order implements Serializable {
 
     private Integer discount;
 
+    private Integer quantity;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private User user;
 
-    public Order(String date, Integer total, Integer discount, User user) {
+    public Order(String date, Integer total, Integer quantity , Integer discount, User user) {
         this.date = date;
         this.total = total;
+        this.quantity = quantity;
         this.discount = discount;
         this.user = user;
     }
@@ -72,5 +75,13 @@ public class Order implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }
