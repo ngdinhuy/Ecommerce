@@ -8,13 +8,18 @@ import com.example.ecommerce.request.RegisterRequest;
 import com.example.ecommerce.response.BaseResponse;
 import com.example.ecommerce.service.AuthService;
 import com.example.ecommerce.service.CartService;
+import com.example.ecommerce.service.UserService;
 import com.example.ecommerce.utils.Define;
 import com.example.ecommerce.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping(path = "/auth")
@@ -24,6 +29,9 @@ public class AuthResource {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    UserService userService;
 
     @PostMapping("/login")
     ResponseEntity<BaseResponse> login(@RequestBody LoginRequest request){
@@ -60,6 +68,12 @@ public class AuthResource {
     ResponseEntity<BaseResponse> register(@RequestBody RegisterRequest request){
         User user = new User(request.getName(), request.getUsername(), request.getPassword(), request.getRole());
         User userByName = authService.getUserByUsername(request.getUsername());
+
+        String validate = Utils.validatePassword(request.getPassword());
+        if (!validate.isEmpty()){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{validate}, null);
+        }
+
         if (userByName != null){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new BaseResponse(HttpStatus.CONFLICT.value(), new String[]{Define.USERNAME_WAS_EXIST},null)
@@ -84,6 +98,31 @@ public class AuthResource {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     new BaseResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new String[]{e.getMessage()}, null)
             );
+        }
+    }
+
+    @PostMapping(path = "/change_password")
+    ResponseEntity<BaseResponse> changePassword(@RequestBody MultiValueMap<String, String> request){
+        Integer idUser = Integer.parseInt(Objects.requireNonNull(request.getFirst("id_user")));
+        String newPassword = Objects.requireNonNull(request.getFirst("new_password"));
+        String oldPassword = Objects.requireNonNull(request.getFirst("old_password"));
+
+        String validate = Utils.validatePassword(newPassword);
+        if (!validate.isEmpty()){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{validate}, null);
+        }
+        User user = userService.findUserById(idUser);
+        if (user == null){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{"IdUser is incorrect!!"}, null);
+        }
+        if (!user.getPassword().equals(oldPassword)){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{"Password is incorrect"}, null);
+        }
+        try{
+            user.setPassword(newPassword);
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{}, userService.updateUser(user));
+        } catch (Exception e){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
         }
     }
 }

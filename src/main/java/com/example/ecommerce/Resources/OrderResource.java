@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -50,15 +47,17 @@ public class OrderResource {
             return Utils.getResponse(Define.ERROR_CODE, new String[]{"Cart is not exist"}, null);
         }
         List<CartItem> cartItemList = cartItemService.getAllCartItem(cart.getId());
-        int total = 0;
+        Double total = 0.0;
+        int quantity = 0;
         for (CartItem cartItem: cartItemList){
             total += cartItem.getTotalPrice();
+            quantity += cartItem.getQuantity();
         }
         try{
-            Order order = orderService.addOrder(new Order(Utils.getCurrentDate(), total, 0, user));
+            Order order = orderService.addOrder(new Order(Utils.getCurrentDate(), total, quantity ,0.0, user));
             for (CartItem cartItem: cartItemList){
                 Product product = cartItem.getProduct();
-                OrderItem orderItem = new OrderItem(cartItem.getQuantity(), product, order);
+                OrderItem orderItem = new OrderItem(cartItem.getQuantity(), product.getPriceProduct()*quantity ,product, order);
                 orderItemService.addOrderItem(orderItem);
             }
             for (CartItem cartItem: cartItemList){
@@ -68,6 +67,25 @@ public class OrderResource {
         } catch (Exception e){
             return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()},null);
         }
+    }
 
+    @GetMapping("/all")
+    ResponseEntity<BaseResponse> getAllOrder(@RequestParam(name = "id_user") int idUser){
+        List<Order> listOrder = orderService.getListOrderByUserId(idUser);
+        if (listOrder.isEmpty()){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{"List order is empty"}, null);
+        } else {
+            return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, listOrder);
+        }
+    }
+
+    @GetMapping("/detail")
+    ResponseEntity<BaseResponse> getListOrderItemByIdOrder(@RequestParam(name = "id_order") int idOrder){
+        List<OrderItem> listOrderItem = orderItemService.getListOrderItem(idOrder);
+        if (listOrderItem.isEmpty()){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{"List order item is empty"}, null);
+        } else {
+            return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, listOrderItem);
+        }
     }
 }

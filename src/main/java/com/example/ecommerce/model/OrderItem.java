@@ -14,11 +14,13 @@ public class OrderItem implements Serializable {
 
     private Integer quantity;
 
-    @JsonIgnore
+    private Double price;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
@@ -26,10 +28,11 @@ public class OrderItem implements Serializable {
     public OrderItem() {
     }
 
-    public OrderItem(Integer quantity, Product product, Order order) {
+    public OrderItem(Integer quantity, Double price, Product product, Order order) {
         this.quantity = quantity;
         this.product = product;
         this.order = order;
+        this.price = price;
     }
 
     public Integer getId() {
@@ -62,5 +65,13 @@ public class OrderItem implements Serializable {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }

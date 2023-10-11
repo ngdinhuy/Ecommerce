@@ -28,11 +28,23 @@ public class User implements Serializable {
 
     private String avatar;
 
+    private String dob;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Product> products;
 
-
+    public User(Integer id, String name, String email, String phoneNumber, String username, String password, int role, String avatar, String dob) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.avatar = avatar;
+        this.dob = dob;
+    }
 
     public void setId(Integer id) {
         this.id = id;
@@ -110,6 +122,14 @@ public class User implements Serializable {
 
     public void setRole(int role) {
         this.role = role;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
     }
 
     @Override

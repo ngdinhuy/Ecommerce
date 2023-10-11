@@ -18,7 +18,7 @@ public class Define {
 
     public static String USER_CART_IS_NOT_EXIST = "User cart is not exist!";
 
-    public class FilferType{
+    public static class FilferType{
         public static Integer CUSTOMER_REVIEW = 1;
         public static Integer PRICE_LOWEST_TO_HIGH = 2;
         public static Integer PRICE_HIGHEST_TO_LOW = 3;

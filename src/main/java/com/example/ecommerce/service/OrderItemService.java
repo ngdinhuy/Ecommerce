@@ -5,6 +5,8 @@ import com.example.ecommerce.repository.OrderItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class OrderItemService {
     @Autowired
@@ -12,5 +14,9 @@ public class OrderItemService {
 
     public OrderItem addOrderItem(OrderItem orderItem){
         return repository.save(orderItem);
+    }
+
+    public List<OrderItem> getListOrderItem(int idOrder){
+        return repository.getOrderItemsByOrderId(idOrder);
     }
 }
