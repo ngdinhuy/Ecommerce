@@ -1,5 +1,6 @@
 package com.example.ecommerce.model;
 
+import com.example.ecommerce.utils.StringListConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -30,8 +31,10 @@ public class Product implements Serializable {
     private String reviewNumber;
 
     private double rate;
-
-    private String image;
+    @Lob
+    @Column(length = 10000)
+    @Convert(converter = StringListConverter.class)
+    private List<String> image;
 
     @ManyToOne()
     @JoinColumn(name = "user_id")
@@ -120,11 +123,11 @@ public class Product implements Serializable {
         this.rate = rate;
     }
 
-    public String getImage() {
+    public List<String> getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(List<String> image) {
         this.image = image;
     }
 

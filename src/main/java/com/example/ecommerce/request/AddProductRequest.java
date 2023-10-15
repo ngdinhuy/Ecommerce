@@ -52,6 +52,9 @@ public class AddProductRequest {
     }
 
     public Double getDiscount() {
+        if (discount == null){
+            return 0.0;
+        }
         return discount;
     }
 
