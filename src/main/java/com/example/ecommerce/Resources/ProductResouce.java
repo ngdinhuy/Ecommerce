@@ -208,6 +208,9 @@ public class ProductResouce {
             if(products.size()<=5){
                 categoryProductResponse.setProducts(products);
                 response.add(categoryProductResponse);
+            } else {
+                categoryProductResponse.setProducts(products.subList(0,5));
+                response.add(categoryProductResponse);
             }
         }
         return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, response);
