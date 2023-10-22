@@ -5,7 +5,7 @@ public class AddProductRequest {
     private String name, description;
 
     private int quantity;
-    private Double price, discount;
+    private Integer price, discount;
 
     private String image;
 
@@ -43,22 +43,22 @@ public class AddProductRequest {
         this.quantity = quantity;
     }
 
-    public Double getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
-    public Double getDiscount() {
+    public Integer getDiscount() {
         if (discount == null){
-            return 0.0;
+            return 0;
         }
         return discount;
     }
 
-    public void setDiscount(Double discount) {
+    public void setDiscount(Integer discount) {
         this.discount = discount;
     }
 

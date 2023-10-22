@@ -44,7 +44,10 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product")
     private List<CartItem> listCartItem;
 
-//    public Product(String name, String descriptiopn, int quantity, int price, int discount, String reviewNumber, double rate, String image, Seller sellerid) {
+    @Transient
+    private String categoryName;
+
+    //    public Product(String name, String descriptiopn, int quantity, int price, int discount, String reviewNumber, double rate, String image, Seller sellerid) {
 //        this.name = name;
 //        this.descriptiopn = descriptiopn;
 //        this.quantity = quantity;
@@ -145,5 +148,13 @@ public class Product implements Serializable {
         } else {
             return price;
         }
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
     }
 }

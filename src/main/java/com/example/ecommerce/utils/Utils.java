@@ -11,8 +11,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -33,7 +35,7 @@ public class Utils {
 
     public static String getCurrentDate() {
         LocalDate localDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM YYYY");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
         return localDate.format(formatter);
     }
 
@@ -74,5 +76,15 @@ public class Utils {
 
     public static String getFileName(String id){
         return "Product" + id + new Date().getTime();
+    }
+
+    public static String getCurrentMonth(){
+        return (Calendar.getInstance().get(Calendar.MONTH) + 1) + "/" + (Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    public static Double formatDouble(Double x){
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        String formattedNumber = decimalFormat.format(x);
+        return Double.parseDouble(formattedNumber);
     }
 }

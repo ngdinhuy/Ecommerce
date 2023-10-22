@@ -49,11 +49,11 @@ public class ProductResouce {
     private S3Service s3Service;
 
     @PostMapping(path = "/insert")
-    ResponseEntity<BaseResponse> insertProduct(@RequestParam String requestString, List<MultipartFile> multipartFiles) {
+    ResponseEntity<BaseResponse> insertProduct(@RequestParam String requestProduct, List<MultipartFile> multipartFiles) {
         try {
 
             ObjectMapper mapper = new ObjectMapper();
-            AddProductRequest request = mapper.readValue(requestString, AddProductRequest.class);
+            AddProductRequest request = mapper.readValue(requestProduct, AddProductRequest.class);
 
             //kiem tra user co ton tai khong
             User seller = userService.findUserByIdAndRole(request.getIdSeller(), Define.ROLE_SELLER);
@@ -150,7 +150,22 @@ public class ProductResouce {
     @GetMapping(path = "/all")
     ResponseEntity<BaseResponse> getAllProduct(){
         List<Product> products = prodcutService.getAllProduct();
+        for(Product product: products){
+            CategoryProduct categoryProduct = categoryProductService.getCategoryProductByProduct(product);
+            product.setCategoryName(categoryProduct.getCategory().getTitle());
+        }
         return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, products);
+    }
+
+    @GetMapping(path = "/detail")
+    ResponseEntity<BaseResponse> getDetailProduct(@RequestParam(name = "id") Integer id){
+        Product product = prodcutService.getProductById(id);
+        if (product == null){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{"Product is not exist"}, null);
+        }
+        CategoryProduct categoryProduct = categoryProductService.getCategoryProductByProduct(product);
+        product.setCategoryName(categoryProduct.getCategory().getTitle());
+        return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, product);
     }
 
     @PutMapping(path = "/{id}")
