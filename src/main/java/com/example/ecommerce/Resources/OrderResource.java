@@ -35,6 +35,9 @@ public class OrderResource {
     @Autowired
     CartService cartService;
 
+    @Autowired
+    StatisticMonthlyService statisticMonthlyService;
+
     @PostMapping(path = "/insert")
     ResponseEntity<BaseResponse> addAllCartToOrder(@RequestBody MultiValueMap<String, String> request){
         Integer idUser = Integer.parseInt(Objects.requireNonNull(request.getFirst("idUser")));
@@ -57,7 +60,10 @@ public class OrderResource {
             Order order = orderService.addOrder(new Order(Utils.getCurrentDate(), total, quantity ,0.0, user));
             for (CartItem cartItem: cartItemList){
                 Product product = cartItem.getProduct();
-                OrderItem orderItem = new OrderItem(cartItem.getQuantity(), product.getPriceProduct()*quantity ,product, order);
+                User seller = product.getSellerid();
+                statisticMonthlyService.addIncome(new StatisticMonthly(seller, Utils.getCurrentMonth(), product.getPriceProduct()*cartItem.getQuantity()));
+
+                OrderItem orderItem = new OrderItem(cartItem.getQuantity(), product.getPriceProduct()*cartItem.getQuantity() ,product, order);
                 orderItemService.addOrderItem(orderItem);
             }
             for (CartItem cartItem: cartItemList){

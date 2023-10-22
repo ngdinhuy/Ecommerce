@@ -1,5 +1,8 @@
 package com.example.ecommerce.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Define {
     public static final int ROLE_ADMIN = 0;
     public static final int ROLE_SELLER = 1;
@@ -36,5 +39,14 @@ public class Define {
         public static Integer PRICE_LOWEST_TO_HIGH = 2;
         public static Integer PRICE_HIGHEST_TO_LOW = 3;
 
+    }
+
+    public static String[] listMonth = {
+            "1/2023", "2/2023", "3/2023", "4/2023", "5/2023", "6/2023", "7/2023", "8/2023", "9/2023", "10/2023", "11/2023", "12/2023"
+    };
+
+    public static class StatisticType{
+        public static Integer ORDER_CURRENT_MONTH = 1;
+        public static Integer RATE_CURRENT_MONTH = 2;
     }
 }
