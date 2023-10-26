@@ -1,4 +1,4 @@
-package com.example.ecommerce.utils;
+package com.example.ecommerce.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
