@@ -30,6 +30,8 @@ public class User implements Serializable {
 
     private String dob;
 
+    private String mailPaypal;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Product> products;
@@ -145,4 +147,11 @@ public class User implements Serializable {
                 '}';
     }
 
+    public String getMailPaypal() {
+        return mailPaypal;
+    }
+
+    public void setMailPaypal(String mailPaypal) {
+        this.mailPaypal = mailPaypal;
+    }
 }

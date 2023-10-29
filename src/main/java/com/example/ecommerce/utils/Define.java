@@ -8,17 +8,18 @@ public class Define {
     public static final int ROLE_SELLER = 1;
     public static final int ROLE_CUSTOMER = 2;
 
+    //paypal
+    public static final String CLIENT_ID = "AWC3WiwnQ4HQAmvLqlXehCbmG4S0PTnZ1_7BpuDMQ5r595i0-HGEesLHw1j0gSK7_VH-sepTyyEbQA19";
+    public static final String PRIVATE_KEY = "ENN7_MWVSjBI54pgVJ1uEd0yjXzSBkBxhFfYpWsh4e82qzCFVaZdVDgNMzd4BcglXFJCtKks2SGm_e6i";
+
+    //AWS S3
+
     public static final String BUCKET_NAME = "huy.ecommerce";
-
     public static final String FOLDER_PRODUCT = "product/product_%d/";
-
     public static final String PATH_PRODUCT_URL = "product/product_%d/%d";
-
     public static final String PATH_AVATAR_URL = "avatar/avatar_%d/%d";
 
-
     public static final String FOLDER_AVATER = "avatar/";
-
     public static final String END_POINT_URL = "https://s3.ap-southeast-1.amazonaws.com/%s/%s";
 
 
@@ -48,5 +49,10 @@ public class Define {
     public static class StatisticType{
         public static Integer ORDER_CURRENT_MONTH = 1;
         public static Integer RATE_CURRENT_MONTH = 2;
+    }
+
+    public static class StatePayment{
+        public static Integer POST_PAYMENT = 1;
+        public static Integer PAYMENT_WITH_PAYPAL = 2;
     }
 }

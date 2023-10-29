@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,11 +32,18 @@ public class Utils {
         user.setName(updateUser.getName());
         user.setPhoneNumber(updateUser.getPhoneNumber());
         user.setDob(updateUser.getDob());
+        user.setMailPaypal(updateUser.getMailPaypal());
     }
 
     public static String getCurrentDate() {
         LocalDate localDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+        return localDate.format(formatter);
+    }
+
+    public static String getCurrentDateAndMinute() {
+        LocalDateTime localDate = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         return localDate.format(formatter);
     }
 
