@@ -16,6 +16,8 @@ public class OrderItem implements Serializable {
 
     private Double price;
 
+    private Integer statePayment;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -73,5 +75,13 @@ public class OrderItem implements Serializable {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Integer getStatePayment() {
+        return statePayment;
+    }
+
+    public void setStatePayment(Integer statePayment) {
+        this.statePayment = statePayment;
     }
 }

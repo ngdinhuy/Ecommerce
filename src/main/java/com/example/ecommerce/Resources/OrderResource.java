@@ -38,47 +38,64 @@ public class OrderResource {
     @Autowired
     StatisticMonthlyService statisticMonthlyService;
 
+    @Autowired
+    PaypalAuthService paypalAuthService;
+
     @PostMapping(path = "/insert")
-    ResponseEntity<BaseResponse> addAllCartToOrder(@RequestBody MultiValueMap<String, String> request){
+    ResponseEntity<BaseResponse> addAllCartToOrder(@RequestBody MultiValueMap<String, String> request) {
         Integer idUser = Integer.parseInt(Objects.requireNonNull(request.getFirst("idUser")));
+        Integer statePayment = Integer.parseInt(request.getFirst("state_payment"));
         User user = userService.findUserById(idUser);
-        if (user == null){
-             return Utils.getResponse(Define.ERROR_CODE, new String[]{"User is not exist"}, null);
+        if (user == null) {
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{"User is not exist"}, null);
         }
         Cart cart = cartService.findCartByUserId(idUser);
-        if (cart == null){
+        if (cart == null) {
             return Utils.getResponse(Define.ERROR_CODE, new String[]{"Cart is not exist"}, null);
         }
         List<CartItem> cartItemList = cartItemService.getAllCartItem(cart.getId());
         Double total = 0.0;
         int quantity = 0;
-        for (CartItem cartItem: cartItemList){
+        for (CartItem cartItem : cartItemList) {
             total += cartItem.getTotalPrice();
             quantity += cartItem.getQuantity();
         }
-        try{
-            Order order = orderService.addOrder(new Order(Utils.getCurrentDate(), total, quantity ,0.0, user));
-            for (CartItem cartItem: cartItemList){
+        try {
+            Order order = orderService.addOrder(new Order(Utils.getCurrentDate(), total, quantity, 0.0, user));
+            for (CartItem cartItem : cartItemList) {
                 Product product = cartItem.getProduct();
                 User seller = product.getSellerid();
-                statisticMonthlyService.addIncome(new StatisticMonthly(seller, Utils.getCurrentMonth(), product.getPriceProduct()*cartItem.getQuantity()));
-
-                OrderItem orderItem = new OrderItem(cartItem.getQuantity(), product.getPriceProduct()*cartItem.getQuantity() ,product, order);
+                //thanh toán với paypal
+                Boolean responsePayment = false;
+                if (statePayment == Define.StatePayment.PAYMENT_WITH_PAYPAL && seller.getMailPaypal() != null && !seller.getMailPaypal().isBlank()) {
+                    String accessToken = paypalAuthService.getAccessToken();
+//                    responsePayment = paypalAuthService.transferMoneyToSeller(cartItem.getTotalPrice().toString(), "sb-c4xfw26043972@personal.example.com", accessToken);
+                    responsePayment = paypalAuthService.transferMoneyToSeller(cartItem.getTotalPrice().toString(), seller.getMailPaypal(), accessToken);
+                } else {
+                    return Utils.getResponse(Define.ERROR_CODE, new String[]{"Seller don't have papal account!"}, null);
+                }
+                statisticMonthlyService.addIncome(new StatisticMonthly(seller, Utils.getCurrentMonth(), product.getPriceProduct() * cartItem.getQuantity()));
+                OrderItem orderItem = new OrderItem(cartItem.getQuantity(), product.getPriceProduct() * cartItem.getQuantity(), product, order);
+                if (responsePayment) {
+                    orderItem.setStatePayment(statePayment);
+                } else {
+                    orderItem.setStatePayment(1);
+                }
                 orderItemService.addOrderItem(orderItem);
             }
-            for (CartItem cartItem: cartItemList){
+            for (CartItem cartItem : cartItemList) {
                 cartItemService.deleteCartItemById(cartItem.getId());
             }
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, true);
-        } catch (Exception e){
-            return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()},null);
+        } catch (Exception e) {
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
         }
     }
 
     @GetMapping("/all")
-    ResponseEntity<BaseResponse> getAllOrder(@RequestParam(name = "id_user") int idUser){
+    ResponseEntity<BaseResponse> getAllOrder(@RequestParam(name = "id_user") int idUser) {
         List<Order> listOrder = orderService.getListOrderByUserId(idUser);
-        if (listOrder.isEmpty()){
+        if (listOrder.isEmpty()) {
             return Utils.getResponse(Define.ERROR_CODE, new String[]{"List order is empty"}, null);
         } else {
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, listOrder);
@@ -86,9 +103,9 @@ public class OrderResource {
     }
 
     @GetMapping("/detail")
-    ResponseEntity<BaseResponse> getListOrderItemByIdOrder(@RequestParam(name = "id_order") int idOrder){
+    ResponseEntity<BaseResponse> getListOrderItemByIdOrder(@RequestParam(name = "id_order") int idOrder) {
         List<OrderItem> listOrderItem = orderItemService.getListOrderItem(idOrder);
-        if (listOrderItem.isEmpty()){
+        if (listOrderItem.isEmpty()) {
             return Utils.getResponse(Define.ERROR_CODE, new String[]{"List order item is empty"}, null);
         } else {
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, listOrderItem);
