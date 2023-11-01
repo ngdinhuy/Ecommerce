@@ -1,5 +1,7 @@
 package com.example.ecommerce.utils;
 
+import org.springframework.data.relational.core.sql.In;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +9,8 @@ public class Define {
     public static final int ROLE_ADMIN = 0;
     public static final int ROLE_SELLER = 1;
     public static final int ROLE_CUSTOMER = 2;
+
+    public static final int NUMBER_PER_PAGE = 10;
 
     //paypal
     public static final String CLIENT_ID = "AWC3WiwnQ4HQAmvLqlXehCbmG4S0PTnZ1_7BpuDMQ5r595i0-HGEesLHw1j0gSK7_VH-sepTyyEbQA19";
@@ -54,5 +58,14 @@ public class Define {
     public static class StatePayment{
         public static Integer POST_PAYMENT = 1;
         public static Integer PAYMENT_WITH_PAYPAL = 2;
+    }
+
+    public static class UserChatFrom{
+        public static Integer FROM_BOT = 0;
+    }
+
+    public static class StatusReadMessage{
+        public static Integer UNREAD = 0;
+        public static Integer READ = 1;
     }
 }
