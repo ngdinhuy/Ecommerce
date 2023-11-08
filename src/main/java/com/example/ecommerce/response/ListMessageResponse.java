@@ -1,22 +1,28 @@
 package com.example.ecommerce.response;
 
+import java.util.Date;
+
 public class ListMessageResponse {
     private Integer idUser;
     private String name;
     private String avatar;
     private String lastMessage;
-    private String date;
+    private Date date;
+
+    private String formatDate;
+
     private Boolean fromYou;
     private Integer numberUnreadMessage;
 
-    public ListMessageResponse(Integer idUser,String name, String avatar, String lastMessage, String date, Boolean fromYou, Integer numberUnreadMessage) {
+    public ListMessageResponse(Integer idUser, String name, String avatar, String lastMessage, String formatDate, Boolean fromYou, Integer numberUnreadMessage, Date date) {
         this.idUser = idUser;
         this.name = name;
         this.avatar = avatar;
         this.lastMessage = lastMessage;
-        this.date = date;
+        this.formatDate = formatDate;
         this.fromYou = fromYou;
         this.numberUnreadMessage = numberUnreadMessage;
+        this.date = date;
     }
 
     public Integer getIdUser() {
@@ -43,12 +49,20 @@ public class ListMessageResponse {
         this.lastMessage = lastMessage;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getFormatDate() {
+        return formatDate;
+    }
+
+    public void setFormatDate(String formatDate) {
+        this.formatDate = formatDate;
     }
 
     public Boolean getFromYou() {
