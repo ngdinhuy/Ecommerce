@@ -12,6 +12,8 @@ public class MessageModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(length = 3000)
     private String message;
 
     @Temporal(TemporalType.TIMESTAMP)

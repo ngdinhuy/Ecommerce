@@ -9,8 +9,11 @@ import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.example.ecommerce.model.MessageModel;
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.request.Message;
+import com.example.ecommerce.request.UserRequest;
+import com.example.ecommerce.service.ChatService;
 import com.example.ecommerce.service.MessageService;
 import com.example.ecommerce.service.UserService;
+import com.example.ecommerce.utils.Define;
 import com.example.ecommerce.utils.Utils;
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.LocalDateTime;
@@ -29,6 +32,9 @@ public class SocketIOController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    ChatService chatService;
+
     SocketIOController(SocketIOServer socketServer) {
         this.socketServer = socketServer;
 
@@ -36,7 +42,7 @@ public class SocketIOController {
         this.socketServer.addDisconnectListener(onUserDisconnectWithSocket);
         this.socketServer.addEventListener("messageSendToUser", Message.class, onSendMessage);
         this.socketServer.addEventListener("get_message", Message.class, onChatReceived());
-        this.socketServer.addEventListener("test", String.class, onChat);
+        this.socketServer.addEventListener("user_disconnect", UserRequest.class, disconnect());
     }
 
 
@@ -51,7 +57,9 @@ public class SocketIOController {
             }
             // Set sự kiện online khi vào app
             if (idUser != null) {
-
+                User user = userService.findUserById(Integer.parseInt(idUser));
+                user.setOnline(true);
+                userService.updateUser(user);
             }
             log.info("Socket ID[{}]  Connected to socket", client.getSessionId().toString());
         }
@@ -112,14 +120,51 @@ public class SocketIOController {
                 client.sendEvent("get_message",
                         new Message(data.getSenderName(), data.getTargetUserName(), data.getMessage(), data.getRoom()));
             }
+
+
+            if (reciever.getRole() == Define.ROLE_SELLER && !reciever.getOnline()){
+                String responseChatBot = chatService.sendMessageToChatBot(data.getMessage());
+                log.info("Chat bot response: " + responseChatBot);
+                responseChatBot = responseChatBot.trim();
+                if (responseChatBot.equals("Error")){
+                    return;
+                }
+                try {
+                    MessageModel messageBot = new MessageModel("[BOT]: " + responseChatBot, Utils.getCurrentDateTime(), reciever, sender, 0);
+
+                    messageService.addMessaggeToDB(messageBot);
+
+                    //Khi nhận tin nhắn từ bot
+                    //put lại thông báo có message tới ng dùng trong room
+                    for (
+                            SocketIOClient client : senderClient.getNamespace().getRoomOperations(data.getRoom()).getClients()) {
+                        client.sendEvent("get_message",
+                                new Message(data.getSenderName(), data.getTargetUserName(), data.getMessage(), data.getRoom()));
+                    }
+                } catch (Exception e){
+                    log.info("Error: " + e.getMessage());
+                }
+            }
         };
     }
 
-    public DataListener<String> onChat = new DataListener<String>() {
-        @Override
-        public void onData(SocketIOClient socketIOClient, String message, AckRequest ackRequest) throws Exception {
-            log.info(message);
-        }
-    };
+//    public DataListener<String> disconnect = new DataListener<String>() {
+//        @Override
+//        public void onData(SocketIOClient socketIOClient, String idUser, AckRequest ackRequest) throws Exception {
+//            log.info("user disconnect: "+idUser);
+//            User user = userService.findUserById(Integer.parseInt(idUser));
+//            user.setOnline(false);
+//            userService.updateUser(user);
+//        }
+//    };
+
+    private DataListener<UserRequest> disconnect() {
+        return (senderClient, data, ackSender) -> {
+            log.info("user disconnect: "+data.getIdUser());
+            User user = userService.findUserById(Integer.parseInt(data.getIdUser()));
+            user.setOnline(false);
+            userService.updateUser(user);
+        };
+    }
 
 }

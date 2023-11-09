@@ -81,7 +81,7 @@ public class PaypalAuthService {
         return false;
     }
 
-    public Boolean transferMoneyToSeller(String money ,String mailUsername, String token){
+    public String transferMoneyToSeller(String money ,String mailUsername, String token){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + token);
@@ -110,10 +110,10 @@ public class PaypalAuthService {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(payoutUrlPayout, HttpMethod.POST, entity, String.class);
-        if (response.getStatusCode() == HttpStatus.OK){
-            return true;
+        if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode().toString().equals("201 CREATED")){
+            return "Success";
         } else {
-            return false;
+            return response.getBody();
         }
     }
 }
