@@ -2,6 +2,7 @@ package com.example.ecommerce.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.data.relational.core.sql.In;
 
 import java.io.Serializable;
 import java.util.List;
@@ -32,11 +33,15 @@ public class User implements Serializable {
 
     private String mailPaypal;
 
+    private Boolean isOnline;
+
+    private Double property;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Product> products;
 
-    public User(Integer id, String name, String email, String phoneNumber, String username, String password, int role, String avatar, String dob) {
+    public User(Integer id, String name, String email, String phoneNumber, String username, String password, int role, String avatar, String dob, Double property, String mailPaypal) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -46,7 +51,12 @@ public class User implements Serializable {
         this.role = role;
         this.avatar = avatar;
         this.dob = dob;
+        this.property = property;
+        this.mailPaypal = mailPaypal;
     }
+
+
+
 
     public void setId(Integer id) {
         this.id = id;
@@ -56,11 +66,13 @@ public class User implements Serializable {
         return avatar;
     }
 
-    public User(String name, String username, String password, int role) {
+    public User(String name, String username, String password, int role, Boolean isOnline, Double property) {
         this.name = name;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.isOnline = isOnline;
+        this.property = property;
     }
 
     public User() {
@@ -145,6 +157,22 @@ public class User implements Serializable {
                 ", password='" + password + '\'' +
                 ", role=" + role +
                 '}';
+    }
+
+    public Boolean getOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(Boolean online) {
+        isOnline = online;
+    }
+
+    public Double getProperty() {
+        return property;
+    }
+
+    public void setProperty(Double property) {
+        this.property = property;
     }
 
     public String getMailPaypal() {

@@ -13,6 +13,7 @@ import com.example.ecommerce.service.StatisticMonthlyService;
 import com.example.ecommerce.service.UserService;
 import com.example.ecommerce.utils.Define;
 import com.example.ecommerce.utils.Utils;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -71,7 +72,7 @@ public class AuthResource {
 
     @PostMapping("/register")
     ResponseEntity<BaseResponse> register(@RequestBody RegisterRequest request) {
-        User user = new User(request.getName(), request.getUsername(), request.getPassword(), request.getRole());
+        User user = new User(request.getName(), request.getUsername(), request.getPassword(), request.getRole(), false, 0.0);
         User userByName = authService.getUserByUsername(request.getUsername());
 
         String validate = Utils.validatePassword(request.getPassword());
@@ -133,5 +134,18 @@ public class AuthResource {
         } catch (Exception e) {
             return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
         }
+    }
+
+    @GetMapping("/verify_password")
+    ResponseEntity<BaseResponse> verifyPassword(@RequestParam("id_user") Integer idUser, @RequestParam("password") String password){
+        User user = userService.findUserById(idUser);
+        if (user == null){
+            return Utils.getResponse(HttpStatus.OK.value(), new String[]{"user is not exist"}, null);
+        }
+        if (!user.getPassword().equals(password)){
+            return Utils.getResponse(HttpStatus.OK.value(), new String[]{"Password is not correct"}, null);
+        }
+        return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, user);
+
     }
 }

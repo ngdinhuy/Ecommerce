@@ -44,7 +44,7 @@ public class OrderResource {
     @PostMapping(path = "/insert")
     ResponseEntity<BaseResponse> addAllCartToOrder(@RequestBody MultiValueMap<String, String> request) {
         Integer idUser = Integer.parseInt(Objects.requireNonNull(request.getFirst("idUser")));
-        Integer statePayment = Integer.parseInt(request.getFirst("state_payment"));
+        Integer statePayment = Integer.parseInt(request.getFirst("state_payment")); //0 : chưa thanh toán, 1 : đã thanh toasn
         User user = userService.findUserById(idUser);
         if (user == null) {
             return Utils.getResponse(Define.ERROR_CODE, new String[]{"User is not exist"}, null);
@@ -66,21 +66,23 @@ public class OrderResource {
                 Product product = cartItem.getProduct();
                 User seller = product.getSellerid();
                 //thanh toán với paypal
-                Boolean responsePayment = false;
-                if (statePayment == Define.StatePayment.PAYMENT_WITH_PAYPAL && seller.getMailPaypal() != null && !seller.getMailPaypal().isBlank()) {
-                    String accessToken = paypalAuthService.getAccessToken();
-//                    responsePayment = paypalAuthService.transferMoneyToSeller(cartItem.getTotalPrice().toString(), "sb-c4xfw26043972@personal.example.com", accessToken);
-                    responsePayment = paypalAuthService.transferMoneyToSeller(cartItem.getTotalPrice().toString(), seller.getMailPaypal(), accessToken);
-                } else {
-                    return Utils.getResponse(Define.ERROR_CODE, new String[]{"Seller don't have papal account!"}, null);
+//                Boolean responsePayment = false;
+//                if (statePayment == Define.StatePayment.PAYMENT_WITH_PAYPAL && seller.getMailPaypal() != null && !seller.getMailPaypal().isBlank()) {
+//                    String accessToken = paypalAuthService.getAccessToken();
+////                    responsePayment = paypalAuthService.transferMoneyToSeller(cartItem.getTotalPrice().toString(), "sb-c4xfw26043972@personal.example.com", accessToken);
+//                    responsePayment = paypalAuthService.transferMoneyToSeller(cartItem.getTotalPrice().toString(), seller.getMailPaypal(), accessToken);
+//                } else {
+//                    return Utils.getResponse(Define.ERROR_CODE, new String[]{"Seller don't have papal account!"}, null);
+//                }
+                // thêm tiền vào tài khoản user
+                if (statePayment == 1){
+                    seller.setProperty(seller.getProperty() + cartItem.getTotalPrice());
+                    userService.updateUser(seller);
                 }
+                //thêm cho data thống kê
                 statisticMonthlyService.addIncome(new StatisticMonthly(seller, Utils.getCurrentMonth(), product.getPriceProduct() * cartItem.getQuantity()));
                 OrderItem orderItem = new OrderItem(cartItem.getQuantity(), product.getPriceProduct() * cartItem.getQuantity(), product, order);
-                if (responsePayment) {
-                    orderItem.setStatePayment(statePayment);
-                } else {
-                    orderItem.setStatePayment(1);
-                }
+                orderItem.setStatePayment(statePayment);
                 orderItemService.addOrderItem(orderItem);
             }
             for (CartItem cartItem : cartItemList) {

@@ -26,6 +26,9 @@ public class Define {
     public static final String FOLDER_AVATER = "avatar/";
     public static final String END_POINT_URL = "https://s3.ap-southeast-1.amazonaws.com/%s/%s";
 
+    //url chatbot
+    public static final String URL_CHAT = "http://127.0.0.1:8000/api/";
+
 
     public static final int ERROR_CODE = -1;
 
