@@ -18,6 +18,7 @@ public class OrderItem implements Serializable {
 
     private Integer statePayment;
 
+    private Boolean isRated;
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -35,6 +36,7 @@ public class OrderItem implements Serializable {
         this.product = product;
         this.order = order;
         this.price = price;
+        this.isRated = false;
     }
 
     public Integer getId() {
@@ -83,5 +85,13 @@ public class OrderItem implements Serializable {
 
     public void setStatePayment(Integer statePayment) {
         this.statePayment = statePayment;
+    }
+
+    public Boolean getIsRated() {
+        return isRated;
+    }
+
+    public void setIsRated(Boolean rated) {
+        isRated = rated;
     }
 }

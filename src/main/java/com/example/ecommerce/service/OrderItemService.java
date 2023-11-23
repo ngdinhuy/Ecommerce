@@ -13,6 +13,10 @@ public class OrderItemService {
     @Autowired
     private OrderItemRepository repository;
 
+    public OrderItem getDetailOrderItem(Integer idOrderItem){
+        return repository.getOrderItemById(idOrderItem);
+    }
+
     public OrderItem addOrderItem(OrderItem orderItem){
         return repository.save(orderItem);
     }
@@ -23,6 +27,10 @@ public class OrderItemService {
 
     public List<OrderItem> getListOrderItemByProduct(Product product){
         return repository.getOrderItemsByProduct(product);
+    }
+
+    public OrderItem updateOrderItem(OrderItem orderItem){
+        return repository.save(orderItem);
     }
 
 }

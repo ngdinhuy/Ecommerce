@@ -48,6 +48,9 @@ public class ProductResouce {
     @Autowired
     private S3Service s3Service;
 
+    @Autowired
+    private OrderItemService orderItemService;
+
     @PostMapping(path = "/insert")
     ResponseEntity<BaseResponse> insertProduct(@RequestParam String requestProduct, List<MultipartFile> multipartFiles) {
         try {
@@ -231,6 +234,32 @@ public class ProductResouce {
         return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, response);
     }
 
+    @GetMapping(path = "/seller_category_product")
+    ResponseEntity<BaseResponse> getCategoryAndProductByIdSeller(@RequestParam Integer idUser){
+        List<Category> categories = categoryService.getListCategory();
+        ArrayList<CategoryProductResponse> response = new ArrayList<>();
+        for(Category category: categories){
+            CategoryProductResponse categoryProductResponse = new CategoryProductResponse();
+            categoryProductResponse.setIdCategory(category.getId());
+            categoryProductResponse.setTitleCategory(category.getTitle());
+            categoryProductResponse.setDescriptionCategory(category.getDescription());
+
+            List<CategoryProduct> categoryProducts = categoryProductService.getCategoryProductByIdCategory(category.getId());
+            if (categoryProducts.isEmpty()){
+                continue;
+            }
+            ArrayList<Product> products = new ArrayList<>();
+            for(CategoryProduct categoryProduct: categoryProducts){
+                if (categoryProduct.getProduct().getSellerid().getId() == idUser){
+                    products.add(prodcutService.getProductById(categoryProduct.getProduct().getId()));
+                }
+            }
+            categoryProductResponse.setProducts(products);
+            response.add(categoryProductResponse);
+        }
+        return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, response);
+    }
+
     @PostMapping(path = "/purchase")
     ResponseEntity<BaseResponse> addToCart(@RequestBody MultiValueMap<String, String> request){
         Integer idUser = Integer.parseInt(Objects.requireNonNull(request.getFirst("idUser")));
@@ -263,6 +292,27 @@ public class ProductResouce {
         try {
 //            return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, s3Service.uploadFile("1", multipartFile));
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, s3Service.uploadProductImage(Utils.getFileName("1"),Utils.convertMultipartToFile(multipartFile)));
+        } catch (Exception e){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
+        }
+    }
+
+    @PostMapping("/rate")
+    public ResponseEntity<BaseResponse> rateProduct(@RequestBody MultiValueMap<String, String> request){
+        Integer idOrderItem = Integer.parseInt(Objects.requireNonNull(request.getFirst("id_order_item")));
+        int rate = Integer.parseInt(Objects.requireNonNull(request.getFirst("rate")));
+        OrderItem orderItem = orderItemService.getDetailOrderItem(idOrderItem);
+        if (orderItem.getIsRated()){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{"You rated this order!"}, null);
+        }
+        Product product = orderItem.getProduct();
+        Integer reviewNumber = Integer.parseInt(product.getReviewNumber());
+        product.setRate((product.getRate() * reviewNumber  + rate)/(reviewNumber + 1) );
+        product.setReviewNumber(String.valueOf(reviewNumber + 1));
+        try {
+            prodcutService.updateProduct(product);
+            orderItem.setIsRated(true);
+            return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, orderItemService.updateOrderItem(orderItem));
         } catch (Exception e){
             return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
         }
