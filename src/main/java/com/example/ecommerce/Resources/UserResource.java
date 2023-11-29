@@ -3,11 +3,9 @@ package com.example.ecommerce.Resources;
 import com.example.ecommerce.model.Order;
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.response.BaseResponse;
+import com.example.ecommerce.response.OrderItemResponse;
 import com.example.ecommerce.response.UserInfoResponse;
-import com.example.ecommerce.service.OrderService;
-import com.example.ecommerce.service.PaypalAuthService;
-import com.example.ecommerce.service.S3Service;
-import com.example.ecommerce.service.UserService;
+import com.example.ecommerce.service.*;
 import com.example.ecommerce.utils.Define;
 import com.example.ecommerce.utils.Utils;
 import jakarta.websocket.server.PathParam;
@@ -29,6 +27,9 @@ public class UserResource {
     private OrderService orderService;
 
     @Autowired
+    private OrderItemService orderItemService;
+
+    @Autowired
     private S3Service s3Service;
 
     @Autowired
@@ -37,13 +38,15 @@ public class UserResource {
     @GetMapping("/{id}")
     ResponseEntity<BaseResponse> getUserById(@PathVariable("id") Integer id){
         User user = userService.findUserById(id);
-        List<Order> myListOrder = orderService.getListOrderByUserId(id);
-        if (user == null){
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new BaseResponse(HttpStatus.NOT_FOUND.value(), new String[]{Define.NOT_FOUND}, null)
+                    new BaseResponse(HttpStatus.NOT_FOUND.value(), new String[]{"Id User is incorrect"}, null)
             );
         }
-        UserInfoResponse userInfoResponse = new UserInfoResponse(user, myListOrder.size());
+        List<OrderItemResponse> listOrderItem = orderItemService.getOrderItemBySellerId(id);
+        List<Order> myListOrder = orderService.getListOrderByUserId(id);
+
+        UserInfoResponse userInfoResponse = new UserInfoResponse(user, myListOrder.size(), listOrderItem.size());
         return ResponseEntity.status(HttpStatus.OK).body(
                 new BaseResponse(HttpStatus.OK.value(), new String[]{}, userInfoResponse)
         );

@@ -15,7 +15,7 @@ public class StatisticMonthly {
     private Integer id;
 
     @JsonIgnore
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
 

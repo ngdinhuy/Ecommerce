@@ -61,12 +61,20 @@ public class StatResource {
             //lấy ra số lượng đơn hàng trong tháng hiện tại
             List<Product> products = prodcutService.getProductBySellerId(user.getId());
             Integer numberOrder = 0;
-            String currentDate = Utils.getCurrentDate();
-            for(Product product: products){
-                List<OrderItem> listOrderItem = orderItemService.getListOrderItemByProduct(product);
-                for (OrderItem orderItem: listOrderItem){
-                    if (orderItem.getOrder().getDate().contains(currentDate)){
-                        numberOrder += orderItem.getQuantity();
+            String currentMonth = Utils.getCurrentMonth();
+//            for(Product product: products){
+//                List<OrderItem> listOrderItem = orderItemService.getListOrderItemByProduct(product);
+//                for (OrderItem orderItem: listOrderItem){
+//                    if (orderItem.getOrder().getDate().contains(currentDate)){
+//                        numberOrder += orderItem.getQuantity();
+//                    }
+//                }
+//            }
+            List<OrderItem> orderItems = orderItemService.getAllOrderItem();
+            for (OrderItem orderItem: orderItems){
+                if (orderItem.getProduct().getSellerid().getId() == idSeller){
+                    if (orderItem.getOrder().getDate().contains(currentMonth)){
+                        numberOrder++;
                     }
                 }
             }

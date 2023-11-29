@@ -33,6 +33,9 @@ public class Utils {
     public static String DATE_FORMAT_3 = "dd/MM/year";
     public static String DATE_FORMAT_4 = "HH:mm";
 
+    public static String DATE_FORMAT_5 = "MM/yyyy";
+
+
 
     public static ResponseEntity<BaseResponse> getResponse(Integer statusCodeResponse, String[] errors, Object data) {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -41,7 +44,8 @@ public class Utils {
     }
 
     public static void updateUser(User user, User updateUser) {
-        user.setEmail(updateUser.getEmail());
+        if (!updateUser.getEmail().isBlank())
+            user.setEmail(updateUser.getEmail());
         user.setName(updateUser.getName());
         user.setPhoneNumber(updateUser.getPhoneNumber());
         user.setDob(updateUser.getDob());
