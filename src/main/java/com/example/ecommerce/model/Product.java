@@ -47,6 +47,9 @@ public class Product implements Serializable {
     @Transient
     private String categoryName;
 
+    @Transient
+    private Integer idCategory;
+
     //    public Product(String name, String descriptiopn, int quantity, int price, int discount, String reviewNumber, double rate, String image, Seller sellerid) {
 //        this.name = name;
 //        this.descriptiopn = descriptiopn;
@@ -142,9 +145,9 @@ public class Product implements Serializable {
         this.user = sellerid;
     }
 
-    public Double getPriceProduct(){
-        if (discount != 0){
-            return Double.parseDouble(new DecimalFormat("##.##").format(price*(100-discount)/100)) ;
+    public Double getPriceProduct() {
+        if (discount != 0) {
+            return Double.parseDouble(new DecimalFormat("##.##").format(price * (100 - discount) / 100));
         } else {
             return price;
         }
@@ -156,5 +159,13 @@ public class Product implements Serializable {
 
     public String getCategoryName() {
         return categoryName;
+    }
+
+    public Integer getIdCategory() {
+        return idCategory;
+    }
+
+    public void setIdCategory(Integer idCategory) {
+        this.idCategory = idCategory;
     }
 }

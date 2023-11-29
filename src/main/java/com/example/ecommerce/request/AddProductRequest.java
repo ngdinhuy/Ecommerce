@@ -1,6 +1,8 @@
 package com.example.ecommerce.request;
 
 public class AddProductRequest {
+
+    private int id;
     private int idSeller;
     private String name, description;
 
@@ -76,5 +78,13 @@ public class AddProductRequest {
 
     public void setIdCategory(int idCategory) {
         this.idCategory = idCategory;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

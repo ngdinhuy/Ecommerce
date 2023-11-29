@@ -1,6 +1,9 @@
 package com.example.ecommerce.request;
 
 public class UpdateProductRequest {
+
+    private Integer id;
+
     private String description;
 
     private Integer discount;
@@ -10,8 +13,16 @@ public class UpdateProductRequest {
     private Integer quantity;
 
     private Double price;
-    private Double rate;
-    private String reviewNumber;
+
+    private Integer idCategory;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getDescription() {
         return description;
@@ -61,19 +72,11 @@ public class UpdateProductRequest {
         this.quantity = quantity;
     }
 
-    public Double getRate() {
-        return rate;
+    public Integer getIdCategory() {
+        return idCategory;
     }
 
-    public void setRate(Double rate) {
-        this.rate = rate;
-    }
-
-    public String getReviewNumber() {
-        return reviewNumber;
-    }
-
-    public void setReviewNumber(String reviewNumber) {
-        this.reviewNumber = reviewNumber;
+    public void setIdCategory(Integer idCategory) {
+        this.idCategory = idCategory;
     }
 }

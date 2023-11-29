@@ -23,6 +23,8 @@ public class Define {
     public static final String PATH_PRODUCT_URL = "product/product_%d/%d";
     public static final String PATH_AVATAR_URL = "avatar/avatar_%d/%d";
 
+    public static final String SCHEME_PRODUCT_URL = "https://s3.ap-southeast-1.amazonaws.com/huy.ecommerce/";
+
     public static final String FOLDER_AVATER = "avatar/";
     public static final String END_POINT_URL = "https://s3.ap-southeast-1.amazonaws.com/%s/%s";
 

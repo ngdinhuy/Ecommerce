@@ -167,38 +167,55 @@ public class ProductResouce {
             return Utils.getResponse(Define.ERROR_CODE, new String[]{"Product is not exist"}, null);
         }
         CategoryProduct categoryProduct = categoryProductService.getCategoryProductByProduct(product);
+        if (categoryProduct == null){
+            return Utils.getResponse(HttpStatus.NOT_FOUND.value(), new String[]{"Not find category"}, null);
+        }
         product.setCategoryName(categoryProduct.getCategory().getTitle());
+        product.setIdCategory(categoryProduct.getCategory().getId());
         return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, product);
     }
 
-    @PutMapping(path = "/{id}")
-    ResponseEntity<BaseResponse> updateProduct(@RequestBody UpdateProductRequest request, @PathVariable int id){
-        Product updatedProduct = prodcutService.getProductById(id);
-        if (updatedProduct == null){
-            return Utils.getResponse(HttpStatus.NOT_FOUND.value(), new String[]{"Product not exist"}, null);
-        }
-        if (request.getDescription()!=null){
-            updatedProduct.setDescription(request.getDescription());
-        }
-        if (request.getDiscount() != null){
-            updatedProduct.setDiscount(request.getDiscount());
-        }
-        if (request.getName() != null){
-            updatedProduct.setName(request.getName());
-        }
-        if (request.getPrice() != null){
-            updatedProduct.setPrice(request.getPrice());
-        }
-        if (request.getQuantity() != null){
-            updatedProduct.setQuantity(request.getQuantity());
-        }
-        if (request.getRate() != null){
-            updatedProduct.setRate(request.getRate());
-        }
-        if (request.getReviewNumber() != null) {
-            updatedProduct.setReviewNumber(request.getReviewNumber());
-        }
+    @PostMapping(path = "/update")
+    ResponseEntity<BaseResponse> updateProduct(@RequestParam String requestProduct, List<MultipartFile> multipartFiles ){
         try{
+            ObjectMapper mapper = new ObjectMapper();
+            UpdateProductRequest request = mapper.readValue(requestProduct, UpdateProductRequest.class);
+            Product updatedProduct = prodcutService.getProductById(request.getId());
+            CategoryProduct categoryProduct = categoryProductService.getCategoryProductByProduct(updatedProduct);
+            if (updatedProduct == null){
+                return Utils.getResponse(HttpStatus.NOT_FOUND.value(), new String[]{"Product not exist"}, null);
+            }
+            if (request.getDescription()!=null){
+                updatedProduct.setDescription(request.getDescription());
+            }
+            if (request.getDiscount() != null){
+                updatedProduct.setDiscount(request.getDiscount());
+            }
+            if (request.getName() != null){
+                updatedProduct.setName(request.getName());
+            }
+            if (request.getPrice() != null){
+                updatedProduct.setPrice(request.getPrice());
+            }
+            if (request.getQuantity() != null){
+                updatedProduct.setQuantity(request.getQuantity());
+            }
+            if (request.getIdCategory() != categoryProduct.getCategory().getId()){
+                Category newCategory = categoryService.getCategoryById(request.getIdCategory());
+                categoryProduct.setCategory(newCategory);
+                categoryProductService.addCategoryProduct(categoryProduct);
+            }
+            for (String url: updatedProduct.getImage()){
+                s3Service.deleteObject(Define.BUCKET_NAME, url.replace(Define.SCHEME_PRODUCT_URL,""));
+            }
+
+            List<String> urls = new ArrayList<>();
+            for(int i=0;i<multipartFiles.size();i++){
+                urls.add(s3Service.uploadProductImage(
+                        String.format(Define.PATH_PRODUCT_URL, updatedProduct.getId(), i),
+                        Utils.convertMultipartToFile(multipartFiles.get(i))));
+            }
+            updatedProduct.setImage(urls);
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, prodcutService.updateProduct(updatedProduct));
         } catch (Exception e){
             return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
