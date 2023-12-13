@@ -8,14 +8,11 @@ import com.example.ecommerce.response.BaseResponse;
 import com.example.ecommerce.response.CategoryProductResponse;
 import com.example.ecommerce.service.*;
 import com.example.ecommerce.utils.Define;
+import com.example.ecommerce.utils.FileHandle;
 import com.example.ecommerce.utils.Utils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hibernate.mapping.Any;
-import org.slf4j.helpers.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -88,6 +85,8 @@ public class ProductResouce {
 
             product.setImage(urls);
             product = prodcutService.insertProduct(product);
+            //add file to train data
+            FileHandle.addProductInfo(product, category);
             return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, product);
         } catch (Exception e){
             return Utils.getResponse(HttpStatus.NO_CONTENT.value(), new String[] {e.getMessage()}, null);
@@ -200,8 +199,8 @@ public class ProductResouce {
             if (request.getQuantity() != null){
                 updatedProduct.setQuantity(request.getQuantity());
             }
+            Category newCategory = categoryService.getCategoryById(request.getIdCategory());
             if (request.getIdCategory() != categoryProduct.getCategory().getId()){
-                Category newCategory = categoryService.getCategoryById(request.getIdCategory());
                 categoryProduct.setCategory(newCategory);
                 categoryProductService.addCategoryProduct(categoryProduct);
             }
@@ -216,7 +215,9 @@ public class ProductResouce {
                         Utils.convertMultipartToFile(multipartFiles.get(i))));
             }
             updatedProduct.setImage(urls);
-            return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, prodcutService.updateProduct(updatedProduct));
+            Product response = prodcutService.updateProduct(updatedProduct);
+            FileHandle.changeFileProductInfo(response, newCategory);
+            return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, response);
         } catch (Exception e){
             return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
         }
