@@ -2,14 +2,17 @@ package com.example.ecommerce.service;
 
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.repository.UserRepository;
-import com.example.ecommerce.response.BaseResponse;
-import com.example.ecommerce.utils.Define;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
-public class AuthService {
+public class AuthService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
@@ -21,4 +24,16 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        List<String> roles = new ArrayList<>();
+        roles.add("USER");
+        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .roles(roles.toArray(new String[0]))
+                .build();
+        return userDetails;
+    }
 }

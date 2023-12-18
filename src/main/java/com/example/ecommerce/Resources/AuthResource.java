@@ -1,24 +1,27 @@
 package com.example.ecommerce.Resources;
 
 
+import com.example.ecommerce.config.JwtUtil;
 import com.example.ecommerce.model.Cart;
 import com.example.ecommerce.model.StatisticMonthly;
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.request.LoginRequest;
 import com.example.ecommerce.request.RegisterRequest;
 import com.example.ecommerce.response.BaseResponse;
+import com.example.ecommerce.response.LoginResponse;
 import com.example.ecommerce.service.AuthService;
 import com.example.ecommerce.service.CartService;
 import com.example.ecommerce.service.StatisticMonthlyService;
 import com.example.ecommerce.service.UserService;
 import com.example.ecommerce.utils.Define;
 import com.example.ecommerce.utils.Utils;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,34 +42,60 @@ public class AuthResource {
     @Autowired
     StatisticMonthlyService statisticMonthlyService;
 
+    private final AuthenticationManager authenticationManager;
+
+
+    private JwtUtil jwtUtil;
+    public AuthResource(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+
+    }
+
     @PostMapping("/login")
     ResponseEntity<BaseResponse> login(@RequestBody LoginRequest request) {
-        User user = authService.getUserByUsername(request.getUsername());
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new BaseResponse(
-                            HttpStatus.NOT_FOUND.value(),
-                            new String[]{Define.NOT_FOUND},
-                            null
-                    )
-            );
-        } else if (!user.getPassword().equals(request.getPassword())) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new BaseResponse(
-                            HttpStatus.NOT_FOUND.value(),
-                            new String[]{Define.PASSWORD_IS_INCORRECT},
-                            null
-                    )
-            );
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new BaseResponse(
-                            HttpStatus.OK.value(),
-                            new String[]{},
-                            user
-                    )
-            );
+        try {
+            Authentication authentication =
+                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            String username = authentication.getName();
+            User user = authService.getUserByUsername(username);
+            String token = jwtUtil.createToken(user);
+
+            return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, new LoginResponse(token,user.getRole(), user.getId()));
+
+        }catch (BadCredentialsException e){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{"Invalid username or password"}, null);
+        }catch (Exception e){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
         }
+
+//
+//        User user = authService.getUserByUsername(request.getUsername());
+//        if (user == null) {
+//            return ResponseEntity.status(HttpStatus.OK).body(
+//                    new BaseResponse(
+//                            HttpStatus.NOT_FOUND.value(),
+//                            new String[]{Define.NOT_FOUND},
+//                            null
+//                    )
+//            );
+//        } else if (!user.getPassword().equals(request.getPassword())) {
+//            return ResponseEntity.status(HttpStatus.OK).body(
+//                    new BaseResponse(
+//                            HttpStatus.NOT_FOUND.value(),
+//                            new String[]{Define.PASSWORD_IS_INCORRECT},
+//                            null
+//                    )
+//            );
+//        } else {
+//            return ResponseEntity.status(HttpStatus.OK).body(
+//                    new BaseResponse(
+//                            HttpStatus.OK.value(),
+//                            new String[]{},
+//                            user
+//                    )
+//            );
+//        }
 
     }
 

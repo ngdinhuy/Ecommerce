@@ -86,6 +86,9 @@ public class StatResource {
         for (Product product: products){
             totalRate += product.getRate();
         }
+        if (products.isEmpty()){
+            return Utils.getResponse(HttpStatus.OK.value(), new String[]{"List product is empty"}, null);
+        }
         return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, Utils.formatDouble(totalRate/products.size()));
     }
 }
