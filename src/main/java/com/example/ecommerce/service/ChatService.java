@@ -18,4 +18,10 @@ public class ChatService {
         ChatbotResponse response = responseEntity.getBody();
         return response.getResponse();
     }
+
+    public void retrainChatbot(){
+        RestTemplate restTemplate = new RestTemplate();
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(Define.URL_CHAT);
+        ResponseEntity<ChatbotResponse> responseEntity = restTemplate.getForEntity(builder.toUriString(), ChatbotResponse.class);
+    }
 }
