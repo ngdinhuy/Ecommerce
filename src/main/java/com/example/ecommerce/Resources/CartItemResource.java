@@ -1,14 +1,14 @@
 package com.example.ecommerce.Resources;
 
-import com.example.ecommerce.model.Cart;
 import com.example.ecommerce.model.CartItem;
+import com.example.ecommerce.model.User;
 import com.example.ecommerce.response.BaseResponse;
 import com.example.ecommerce.service.CartItemService;
 import com.example.ecommerce.service.CartService;
+import com.example.ecommerce.service.UserService;
 import com.example.ecommerce.utils.Define;
 import com.example.ecommerce.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.Repository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -25,6 +25,9 @@ public class CartItemResource {
 
     @Autowired
     CartService cartService;
+
+    @Autowired
+    UserService userService;
 
     @GetMapping(path = "/all/{idUser}")
     ResponseEntity<BaseResponse> getAllCartItem(@PathVariable Integer idUser){
@@ -65,5 +68,30 @@ public class CartItemResource {
         } catch (Exception e){
             return Utils.getResponse(Define.ERROR_CODE, new String[]{e.getMessage()}, null);
         }
+    }
+
+    @GetMapping("/verify_cart")
+    public ResponseEntity<BaseResponse> verifyCart(@RequestParam Integer idUser) {
+        //verify user
+        User user = userService.findUserById(idUser);
+        if (user == null) {
+            return Utils.getResponse(HttpStatus.NOT_FOUND.value(), new String[]{"id user is incorrect"}, null);
+        }
+        //verify cart
+        Integer idCart = cartService.getCartIdByUserId(idUser);
+        if (idCart == null){
+            return Utils.getResponse(Define.ERROR_CODE, new String[]{Define.USER_CART_IS_NOT_EXIST}, null);
+        }
+        List<CartItem> cartItems = cartItemService.getAllCartItem(idCart);
+        if (cartItems.isEmpty()) {
+            return Utils.getResponse(HttpStatus.NOT_FOUND.value(), new String[]{"cart is empty"}, null);
+        }
+        for(CartItem cartItem : cartItems){
+            if (cartItem.getQuantity() > cartItem.getProduct().getQuantity()) {
+                String error = "Product " + cartItem.getProduct().getName() + " doesn't have enough quantity.";
+                return Utils.getResponse(Define.ERROR_CODE, new String[]{error}, null);
+            }
+        }
+        return Utils.getResponse(HttpStatus.OK.value(), new String[]{}, true);
     }
 }
