@@ -18,7 +18,7 @@ public class FileHandle {
             File file = new File(folder, fileName);
             FileWriter fw = new FileWriter(file);
             fw.write("name: " + product.getName() + "\n");
-            fw.write("price: " + product.getPrice() + "\n");
+            fw.write("price: " + product.getPrice() + "$\n");
             fw.write("description: " + product.getDescription() + "\n");
             fw.write("discount: " + product.getDiscount() + "\n");
             fw.write("seller: " + product.getSellerid().getName() + "\n");

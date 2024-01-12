@@ -23,8 +23,8 @@ public class Define {
     public static final String PATH_PRODUCT_URL = "product/product_%d/%d";
     public static final String PATH_AVATAR_URL = "avatar/avatar_%d/%d";
 
-    public static final String FILE_PATH = "train/";
-    public static final String FILE_NAME = "product_%d";
+    public static final String FILE_PATH = "/Users/mac/Documents/Django/ChatBot/context_data/data";
+    public static final String FILE_NAME = "product_%d.txt";
     public static final String PRODUCT_PATH = "train/product_%d";
 
     public static final String SCHEME_PRODUCT_URL = "https://s3.ap-southeast-1.amazonaws.com/huy.ecommerce/";
